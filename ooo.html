@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>배경 영상 페이지</title>
+  <link href="https://cdn.jsdelivr.net/gh/webfontworld/gmarket/GmarketSans.css" rel="stylesheet">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      background: transparent;
+    }
+    .bg-video {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -1;
+    }
+    .home-title {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 73vw;
+      z-index: 5;
+    }
+    .search-bg {
+      position: fixed;
+      top: -10px;
+      left: 40px;
+      width: 300px;
+      z-index: 10;
+    }
+    .search-input {
+      position: fixed;
+      top: 45px;
+      left: 100px;
+      width: 260px;
+      height: 32px;
+      padding-left: 14px;
+      font-size: 16px;
+      border: none;
+      border-radius: 20px;
+      background: transparent;
+      z-index: 11;
+      color: #333;
+      outline: none;
+    }
+    .footer-banner {
+      position: fixed;
+      bottom: -20px;
+      left: 50%;
+      transform: translateX(-46%);
+      max-width: 720px;
+      z-index: 99;
+      box-sizing: border-box;
+      cursor: pointer;
+    }
+    .footer-banner img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+    .bulb-icon {
+      width: 28px;
+      position: relative;
+      top: 548px;
+      left: -140px;
+      transition: filter 0.3s ease-in-out;
+    }
+    .footer-banner:hover .bulb-icon {
+      filter: drop-shadow(0 0 6px yellow)
+              drop-shadow(0 0 12px #ffeb3b)
+              drop-shadow(0 0 18px #fff176);
+    }
+    .menu-button {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      width: 36px;
+      height: 36px;
+      z-index: 10001;
+      cursor: pointer;
+      fill: white;
+    }
+    .menu-panel {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 0;
+      height: 100%;
+      background:#F4B940 ;
+      z-index: 10000;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: width 0.4s ease;
+    }
+    .menu-panel.show {
+      width: 400px;
+    }
+    .menu-lines {
+      width: 100%;
+      padding: 60px 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+      box-sizing: border-box;
+    }
+    .menu-item .text {
+      color: white;
+      font-size: 16px;
+      font-weight: 400;
+      margin-bottom: 10px;
+      line-height: 1.4;
+    }
+    .menu-item .text strong {
+      font-size: 18px;
+      font-weight: bold;
+      color: #000;
+    }
+    .menu-item .line {
+      width: 100%;
+      height: 2px;
+      background-color: white;
+      position: relative;
+    }
+    .menu-item .line::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      top: -3px;
+      width: 14px;
+      height: 2px;
+      background-color: white;
+      transform: rotate(30deg);
+      transform-origin: right center;
+    }
+    #fullScreenVideo video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 10%;
+      background: transparent;
+    }
+    .back-button {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      width: 300px;
+      height: 40px;
+      z-index: 9999;
+      background: transparent;
+      cursor: pointer;
+      transform: translateX(30px);
+    }
+    .menu-tabs {
+      position: absolute;
+      top: 125px;
+      left: 45%;
+      transform: none;
+      display: flex;
+      gap: 50px;
+      z-index: 20000;
+      font-family: 'GmarketSans', sans-serif;
+    }
+    .menu-tab {
+      font-size: 22px;
+      font-weight: 700;
+      color: black;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .menu-tab:hover {
+      transform: scale(1.1);
+    }
+
+  
+    .menu-content {
+  display: none;
+  pointer-events: none;
+}
+.menu-content.active {
+  display: block;
+  pointer-events: auto;
+}
+.quiz-card {
+  margin: 30px auto;
+  width: 300px;
+  text-align: center;
+}
+
+.content-wrapper {
+  position: absolute;
+  top: -20px;
+  left: 14%;
+  transform: translateX(-50%);
+  z-index: 1000;
+}
+
+.mummy-card1 {
+  position: absolute;
+  top: 50px;
+  left: 80px;
+  width: 1320px;     /* ✅ 카드 박스 고정 너비 */
+  height: auto;    /* ✅ 카드 박스 고정 높이 */
+  cursor: pointer;
+  border-radius: 16px;
+  transition: transform 0.3s ease;
+  z-index: 1000;
+}
+
+.mummy-card2 {
+  position: absolute;
+  top: 50px;        /* 질문 카드 기준 위에서 얼마나 떨어질지 */
+  left: 100px;       /* 오른쪽으로 얼마나 이동할지 */
+  width: 1320px;
+  height: auto;
+  cursor: pointer;
+  border-radius: 16px;
+  transition: transform 0.3s ease;
+  z-index: 1000;
+}
+
+.mummy-card3 {
+  position: absolute;
+  top: 53px;        /* 질문 카드 기준 위에서 얼마나 떨어질지 */
+  left: 80px;       /* 오른쪽으로 얼마나 이동할지 */
+  width: 1320px;
+  height: auto;
+  cursor: pointer;
+  border-radius: 16px;
+  transition: transform 0.3s ease;
+  z-index: 1000;
+}
+
+.mummy-card4 {
+  position: absolute;
+  top:  53px;        /* 질문 카드 기준 위에서 얼마나 떨어질지 */
+  left: 100px;       /* 오른쪽으로 얼마나 이동할지 */
+  width: 1320px;
+  height: auto;
+  cursor: pointer;
+  border-radius: 16px;
+  transition: transform 0.3s ease;
+  z-index: 1000;
+}
+
+.answer-btn-wrapper {
+  position: absolute;
+  top: 700px;     /* 카드 하단쯤 */
+  left: 350px;    /* 오른쪽 카드 영역에 맞게 */
+  z-index: 10001;
+}
+
+#showAnswerBtn {
+  width:auto;
+  white-space: nowrap; 
+  background-color: #f55b5b;
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+  border: none;
+  border-radius: 12px 12px 0 0; /* 상단만 둥글게 */
+  padding: 12px 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.correct-answer {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.correct-answer img {
+  position: absolute;
+  top: 130px;        /* 질문 카드 기준 위에서 얼마나 떨어질지 */
+  left: 240px;       /* 오른쪽으로 얼마나 이동할지 */
+  width: 1320px;
+  height: auto;
+  cursor: pointer;
+  border-radius: 16px;
+  transition: transform 0.3s ease;
+  z-index: 1000;
+}
+
+.pyramid-svg1 {
+  width: 1320px;
+  height: auto;
+  position: absolute;
+  top: 60px;
+  left: 240px;
+  z-index: 1000;
+  border-radius: 16px;
+}
+
+.pyramid-svg2 {
+  width: 1320px;
+  height: auto;
+  position: absolute;
+  top: 0px;
+  left: 200px;
+  z-index: 1000;
+  border-radius: 16px;
+}
+
+/* 시작 버튼 */
+.start-btn {
+  position: absolute;
+  top: 650px;        /* 위치는 너가 원하는 위치에 조절 가능 */
+  left: 370px;
+  z-index: 1100;
+  background-color: #f6c544;
+  color: black;
+  font-size: 18px;
+  font-weight: bold;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 20px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+  pointer-events: auto;
+}
+
+/* 보석 이미지 4개 */
+.gem {
+  position: absolute;
+  width: 300px;
+  height: auto;
+  z-index: 15000;          /* ⬅ 이거 꼭 올려줘야 클릭 가능 */
+  pointer-events: auto;    /* ⬅ 클릭 가능하게! */
+  transition: opacity 0.3s ease;
+  
+}
+
+/* 위치는 원하는대로 조정 가능 */
+.gem1 { top: 90px; left: 500px; }
+.gem2 { top: 310px; left: 1100px; }
+.gem3 { top: 400px; left: 500px; }
+.gem4 { top: 500px; left: 900px; }
+
+#gem1Card {
+  display: block;
+  position: fixed;
+  top: 50%;              /* 👉 화면 세로 중앙 */
+  left: 50%;             /* 👉 화면 가로 중앙 */
+  transform: translate(-50%, -50%);
+  z-index: 30000;
+  width: 900px;         /* 또는 auto, 너무 크면 줄여도 됨 */
+  height: auto;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+#gem2Card {
+  position: fixed;
+  top: 50%;
+  left: 80%;
+  transform: translate(-50%, -50%);
+  z-index: 30000;
+  width: 900px;
+  height: auto;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+#gem3Card {
+  position: fixed;
+  top: 80%;
+  left: 60%;
+  transform: translate(-50%, -50%);
+  z-index: 30000;
+  width: 900px;
+  height: auto;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+#gem4Card {
+  position: fixed;
+  top: 80%;
+  left: 80%;
+  transform: translate(-50%, -50%);
+  z-index: 30000;
+  width: 1000px;
+  height: auto;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.war-pre-svg {
+  position: absolute;
+  width: 1300px;
+  height: auto;
+  z-index: 20001;
+  cursor: pointer;
+}
+
+.svg1 { top: -4px; left: 210px; }
+.svg2 { top: -4px; left: 210px; }
+.svg3 { top: -4px; left: 210px; }
+.svg4 { top: -4px; left: 210px; }
+
+.war-svg {
+  position: absolute;
+  top: 55%;
+  left: 53%;
+  transform: translate(-50%, -50%);
+  width: 1150px;
+  height: auto;
+  z-index: 1100;
+  border-radius: 16px;
+}
+
+
+.eggghost-video {
+  position: absolute;
+  top: 60%;
+  left: 54%;
+  transform: translate(-50%, -50%);
+  
+  width: 90vw;         /* 넓게 사용 */
+  max-width: 1000px;   /* 너무 커지지 않게 제한 */
+  height: auto;
+  z-index: 1100;
+
+  object-fit: contain; /* img에도 안전하게 사용 가능 */
+  pointer-events: none; /* 클릭 방지 (선택사항) */
+}
+
+.kinghabit-svg {
+  position: fixed;
+  top: 380px;                  /* 화면에서 중앙쯤으로 위치를 조정 */
+  left: 800px;                 /* 중심 기준 왼쪽 위치 */
+  transform: translate(-50%, -50%);  /* ⭐ 중심 기준으로 이동 */
+  width: 1200px;               /* 이제 마음껏 키워도 위치가 그대로! */
+  height: auto;
+  z-index: 1100;
+  border-radius: 16px;
+  pointer-events: none;
+}
+
+#overlay-image {
+  position: fixed;
+  top: 380px;
+  left: 800px;
+  transform: translate(-50%, -50%);
+  width: 1200px;
+  height: auto;
+  z-index: 1150; /* 위에 뜨도록 더 높은 z-index */
+  pointer-events: none; /* 클릭 안 되도록 설정 */
+  border-radius: 16px;
+}
+
+.kinghabit-svg-right {
+  position: fixed;
+  top: 500px; /* 기존과 같은 세로 위치 */
+  left: 940px; /* 기존 이미지 width + 간격을 고려한 값 (500 + 800 + 약간) */
+  transform: translate(-50%, -50%);
+  width: 900px;
+  height: auto;
+  z-index: 1100;
+  pointer-events: auto;
+}
+
+#torture-gif {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 1100px;
+  height: auto;
+  z-index: 12000;
+  border-radius: 16px;
+}
+
+#torture-gif-2 {
+  position: fixed;
+  top: 70%; /* ✅ 첫 번째 GIF 아래로 배치 */
+  left: 55%;
+  transform: translate(-50%, -50%);
+  width: 1100px;
+  height: auto;
+  z-index: 12000;
+  border-radius: 16px;
+}
+
+  </style>
+</head>
+<body>
+  <video class="bg-video" autoplay muted loop playsinline>
+    <source src="https://res.cloudinary.com/dshryrukz/video/upload/v1747153819/%EB%B0%B0%EA%B2%BD_%EC%98%81%EC%83%81_jqgavo.mp4" type="video/mp4">
+  </video>
+  <img class="search-bg" src="https://res.cloudinary.com/dshryrukz/image/upload/v1747186779/%EC%8F%A0%EC%8F%A0%ED%95%9C_3_wxt5na.png" alt="검색창 배경">
+  <input class="search-input" type="text" placeholder="Find a story...">
+  <img class="home-title" src="https://res.cloudinary.com/dshryrukz/image/upload/v1747153690/%EC%8F%A0%EC%8F%A0%ED%95%9C_1_wms3vk.svg" alt="홈 타이틀">
+  <div class="footer-banner" onclick="showVideo()">
+    <div class="banner-content">
+      <img class="bulb-icon" src="https://res.cloudinary.com/dshryrukz/image/upload/v1747161813/%EC%8F%A0%EC%8F%A0%ED%95%9C_4_n2mf6n.svg" alt="전구 아이콘">
+      <img src="https://res.cloudinary.com/dshryrukz/image/upload/v1747156418/%EC%8F%A0%EC%8F%A0%ED%95%9C_2_t5zfcd.svg" alt="잡지식 배너">
+    </div>
+  </div>
+  <svg class="menu-button" viewBox="0 0 100 80" onclick="toggleMenu()">
+    <rect width="100" height="10" rx="6"></rect>
+    <rect y="30" width="100" height="10" rx="6"></rect>
+    <rect y="60" width="100" height="10" rx="6"></rect>
+  </svg>
+  <div class="menu-panel" id="menuPanel">
+    <div class="menu-lines">
+      <div class="menu-item" onclick="showFullScreenVideo('science')">
+        <div class="text"><strong>과학 & 자연</strong><br>미라, 피라미드, 황당한 전쟁</div>
+        <div class="line"></div>
+      </div>
+      <div class="menu-item" onclick="showFullScreenVideo('history')">
+        <div class="text"><strong>역사 속 기묘한 사실</strong><br>왕의 습관, 고문 도구</div>
+        <div class="line"></div>
+      </div>
+      <div class="menu-item" onclick="showFullScreenVideo('psychology')">
+        <div class="text"><strong>인간과 심리</strong><br>착각, 데자뷰, 꿈의 비밀</div>
+        <div class="line"></div>
+      </div>
+      <div class="menu-item" onclick="showFullScreenVideo('invention')">
+        <div class="text"><strong>발명 & 문학</strong><br>기묘한 도구들, 국기 숨은 의미</div>
+        <div class="line"></div>
+      </div>
+    </div>
+  </div>
+  <div id="fullScreenVideo" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:15000;">
+    <video autoplay muted loop playsinline style="width:100%; height:100%; object-fit:cover;">
+      <source src="https://res.cloudinary.com/dshryrukz/video/upload/v1747803200/%EC%95%8C%EC%95%84%EB%91%90%EB%A9%B4_Video_Video_vtuivy.mp4" type="video/mp4">
+    </video>
+    <div class="menu-tabs-container">
+      <div class="menu-tabs" id="tabs-science" style="display: none;">
+        <div class="menu-tab" data-menu="mummy">미라</div>
+        <div class="menu-tab" data-menu="pyramid">피라미드</div>
+        <div class="menu-tab" data-menu="war">황당한 전쟁</div>
+        <div class="menu-tab" data-menu="eggghost">귀신</div>
+      </div>
+
+      <div class="content-wrapper">
+        <div id="mummy-content" class="menu-content">
+          <div class="quiz-card">
+            <img src="https://res.cloudinary.com/dshryrukz/image/upload/v1748875364/%EC%8F%A0%EC%8F%A0%ED%95%9C_19_trpwmg.svg" alt="미라 퀴즈 카드">
+          </div>
+
+        
+          <div class="answer card">
+            <img class="mummy-card1" src="https://res.cloudinary.com/dshryrukz/image/upload/v1748877359/%EC%8F%A0%EC%8F%A0%ED%95%9C_20_mlhqat.svg" alt="정답 카드 1">                         
+            <img class="mummy-card2" src="https://res.cloudinary.com/dshryrukz/image/upload/v1748877369/%EC%8F%A0%EC%8F%A0%ED%95%9C_21_eaxuqy.svg" alt="정답 카드 2">
+            <img class="mummy-card3" src="https://res.cloudinary.com/dshryrukz/image/upload/v1748877384/%EC%8F%A0%EC%8F%A0%ED%95%9C_22_pkssjj.svg" alt="정답 카드 3">
+            <img class="mummy-card4" src="https://res.cloudinary.com/dshryrukz/image/upload/v1748877455/%EC%8F%A0%EC%8F%A0%ED%95%9C_24_t3k1qw.svg" alt="정답 카드 4">
+          </div>
+      
+        <!-- 정답 보기 버튼 -->
+<div class="answer-btn-wrapper">
+  <button id="showAnswerBtn">정답 보기</button>
+</div>
+
+<!-- 정답 SVG 삽입될 자리 -->
+<div class="correct-answer" id="correctAnswer" style="display: none;">
+  <img src="https://res.cloudinary.com/dshryrukz/image/upload/v1748885287/%EC%8F%A0%EC%8F%A0%ED%95%9C_25_vinkhi.svg" alt="정답" />
+</div>
+</div>
+ </div>
+
+        <div id="pyramid-content" class="menu-content">
+          <div class="quiz-card">
+            <img src=https://res.cloudinary.com/dshryrukz/image/upload/v1748976080/%EC%8F%A0%EC%8F%A0%ED%95%9C_29_rrklw6.svg alt="피라미드 퀴즈 카드" class="pyramid-svg1">
+            <button id="startGemBtn" class="start-btn">시작하기</button>
+            <img src=https://res.cloudinary.com/dshryrukz/image/upload/v1748976832/%EC%8F%A0%EC%8F%A0%ED%95%9C_30_l1sfe2.svg alt="피라미드 퀴즈 카드2" class="pyramid-svg2">
+           
+            <img src="https://res.cloudinary.com/dshryrukz/image/upload/v1748977884/%EC%8F%A0%EC%8F%A0%ED%95%9C_31_itxelm.svg" alt="보석1" class="gem gem1" style="display:none;">
+            <img src="https://res.cloudinary.com/dshryrukz/image/upload/v1748977884/%EC%8F%A0%EC%8F%A0%ED%95%9C_31_itxelm.svg" alt="보석2" class="gem gem2" style="display:none;">
+            <img src="https://res.cloudinary.com/dshryrukz/image/upload/v1748977884/%EC%8F%A0%EC%8F%A0%ED%95%9C_31_itxelm.svg" alt="보석3" class="gem gem3" style="display:none;">
+            <img src="https://res.cloudinary.com/dshryrukz/image/upload/v1748977884/%EC%8F%A0%EC%8F%A0%ED%95%9C_31_itxelm.svg" alt="보석4" class="gem gem4" style="display:none;">
+
+            <img 
+            id="gem1Card" 
+            src=https://res.cloudinary.com/dshryrukz/image/upload/v1749752891/%EC%95%8C%EC%95%84%EB%91%90%EB%A9%B4_Video_Video_3_drwfth.gif
+            alt="gem1 카드" 
+            style="display: none;" 
+            />
+
+            <!-- gem2 클릭 시 보여질 카드 (GIF) -->
+<img
+  id="gem2Card"
+  src="https://res.cloudinary.com/dshryrukz/image/upload/v1749753701/%EC%95%8C%EC%95%84%EB%91%90%EB%A9%B4_Video_Video_4_bj7vk7.gif"
+  style="display: none;"
+/>
+
+<img
+  id="gem3Card"
+  src="https://res.cloudinary.com/dshryrukz/image/upload/v1749754636/%EC%95%8C%EC%95%84%EB%91%90%EB%A9%B4_Video_Video_5_zwspnr.gif"
+  style="display: none;"
+/>
+
+<img
+  id="gem4Card"
+  src="https://res.cloudinary.com/dshryrukz/image/upload/v1749755420/%EC%95%8C%EC%95%84%EB%91%90%EB%A9%B4_Video_Video_6_hrfxxg.gif"
+  style="display: none;"
+/>
+
+            
+          </div>
+        </div>  
+        <div id="war-content" class="menu-content">
+          <div class="quiz-card">
+            <img src="https://res.cloudinary.com/dshryrukz/image/upload/v1749758320/%EC%95%8C%EC%95%84%EB%91%90%EB%A9%B4_Video_Video_8_zqgnox.gif" 
+                 alt="황당한 전쟁 퀴즈 카드" 
+                 class="war-svg" />
+
+                 <img src="https://res.cloudinary.com/dshryrukz/image/upload/v1749756506/%EC%8F%A0%EC%8F%A0%ED%95%9C_37_ufbl2s.svg" class="war-pre-svg svg1" />
+                 <img src="https://res.cloudinary.com/dshryrukz/image/upload/v1749757091/%EC%8F%A0%EC%8F%A0%ED%95%9C_38_q5v8yv.svg" class="war-pre-svg svg2" />
+                 <img src="https://res.cloudinary.com/dshryrukz/image/upload/v1749757104/%EC%8F%A0%EC%8F%A0%ED%95%9C_39_bwfzrg.svg" class="war-pre-svg svg3" />
+                 <img src="https://res.cloudinary.com/dshryrukz/image/upload/v1749757116/%EC%8F%A0%EC%8F%A0%ED%95%9C_40_kjfqok.svg" class="war-pre-svg svg4" />
+          </div>
+        </div>
+
+          <div id="eggghost-content" class="menu-content">
+           <img
+  class="eggghost-video"
+  src="https://res.cloudinary.com/dshryrukz/image/upload/v1749760335/%EC%95%8C%EC%95%84%EB%91%90%EB%A9%B4_Video_Video_10_xlpshw.gif"
+  alt="귀신"
+/>
+
+          </div>
+          
+
+      
+
+      <div class="menu-tabs" id="tabs-history" style="display: none;">
+        <div class="menu-tab" data-menu="kinghabit">왕의 습관</div>
+        <div class="menu-tab" data-menu="torture">고문 도구</div>
+        <div class="menu-tab" data-menu="custom">기이한 관습</div>
+      </div>
+
+      <!-- 왕의 습관 콘텐츠 -->
+<div id="kinghabit-content" class="menu-content">
+  <img
+    class="kinghabit-svg"
+    src="https://res.cloudinary.com/dshryrukz/image/upload/v1749971864/%EC%8F%A0%EC%8F%A0%ED%95%9C_7_qjdbce.png"
+    alt="왼쪽 카드"
+  />
+  <img
+    id="kinghabit-svg-right"
+    class="kinghabit-svg-right"
+    src="https://res.cloudinary.com/dshryrukz/image/upload/v1749971025/%EC%8F%A0%EC%8F%A0%ED%95%9C_43_ivd2hz.svg"
+    alt="오른쪽 카드"
+  />
+
+  <!-- 클릭 시 뜨는 오버레이 PNG -->
+<img
+  id="overlay-image"
+  src="https://res.cloudinary.com/dshryrukz/image/upload/v1749983572/%EC%8F%A0%EC%8F%A0%ED%95%9C_9_drroux.png"
+  style="display: none;"
+  alt="덮는 이미지"
+/>
+</div>
+
+<!-- 고문 도구 콘텐츠 -->
+<div id="torture-content" class="menu-content">
+  <img
+    id="torture-gif"
+    src="https://res.cloudinary.com/dshryrukz/image/upload/v1750094620/%EC%95%8C%EC%95%84%EB%91%90%EB%A9%B4_Video_Video_11_puijsw.gif"
+    alt="고문 도구 GIF"
+    style="display: none;"
+  />
+<img
+    id="torture-gif-2"
+    src="https://res.cloudinary.com/dshryrukz/image/upload/v1750138379/%EC%95%8C%EC%95%84%EB%91%90%EB%A9%B4_Video_Video_13_pcj4kc.gif"
+    alt="고문 도구 GIF2"
+    style="display: none;"
+  />
+  <img
+  id="torture-gif-3"
+  src="https://res.cloudinary.com/dshryrukz/image/upload/v1750139516/%EC%95%8C%EC%95%84%EB%91%90%EB%A9%B4_Video_Video_14_lzotm7.gif"
+  alt="추가 GIF"
+  style="display: none;"
+/>
+
+</div>
+
+
+
+           
+      <div class="menu-tabs" id="tabs-psychology" style="display: none;">
+        <div class="menu-tab">착각</div>
+        <div class="menu-tab">데자뷰</div>
+        <div class="menu-tab">꿈의 비밀</div>
+      </div>
+      <div class="menu-tabs" id="tabs-invention" style="display: none;">
+        <div class="menu-tab">기묘한 도구들</div>
+        <div class="menu-tab">국기 숨은 의미</div>
+      </div>
+    </div>
+    <img src="https://res.cloudinary.com/dshryrukz/image/upload/v1748682329/%EC%8F%A0%EC%8F%A0%ED%95%9C_13_d9vkgc.svg" alt="뒤로가기" class="back-button" onclick="closeFullScreenVideo()" />
+  </div>
+
+  <script>
+    function toggleMenu() {
+      document.getElementById('menuPanel').classList.toggle('show');
+    }
+    function showVideo() {
+      document.getElementById('videoPopup').style.display = 'flex';
+    }
+    function closeVideo() {
+      document.getElementById('videoPopup').style.display = 'none';
+    }
+    function showFullScreenVideo(type) {
+      document.getElementById('menuPanel').classList.remove('show');
+      document.getElementById('fullScreenVideo').style.display = 'block';
+      document.querySelector('.menu-button').style.display = 'none';
+      document.querySelectorAll('.menu-tabs').forEach(el => {
+        el.style.display = 'none';
+      });
+      const target = document.getElementById(`tabs-${type}`);
+      if (target) {
+        target.style.display = 'flex';
+      }
+    }
+    function closeFullScreenVideo() {
+      document.getElementById('fullScreenVideo').style.display = 'none';
+      document.querySelector('.menu-button').style.display = 'block';
+    }
+
+  </script>
+
+<script>
+  const contents = document.querySelectorAll('.menu-content');
+  const contentWrapper = document.querySelector('.content-wrapper');
+
+  // ✅ 모든 메뉴 탭들에 대해 클릭 이벤트 추가
+  document.querySelectorAll('.menu-tabs').forEach(tabGroup => {
+    tabGroup.addEventListener('click', function (e) {
+      const tab = e.target.closest('.menu-tab[data-menu]');
+      if (!tab) return;
+
+      const selected = tab.dataset.menu;
+
+      // 모든 콘텐츠 숨기기
+      contents.forEach(content => {
+        content.classList.remove('active');
+      });
+
+      // 해당 콘텐츠 보이기
+      const target = document.getElementById(`${selected}-content`);
+      if (target) {
+        target.classList.add('active');
+        contentWrapper.style.display = 'block';
+      }
+    });
+  });
+</script>
+
+
+
+<script>
+ document.getElementById('showAnswerBtn').addEventListener('click', () => {
+  const answer = document.getElementById('correctAnswer');
+  const isVisible = answer.style.display === 'flex';
+
+  // 토글 동작
+  answer.style.display = isVisible ? 'none' : 'flex';
+  document.getElementById('showAnswerBtn').textContent = isVisible ? '정답 보기' : '정답 숨기기';
+});
+
+  </script>
+  
+
+
+ <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const gem1 = document.querySelector('.gem1');
+    const gem1Card = document.getElementById('gem1Card');
+    const startBtn = document.getElementById('startGemBtn');
+
+    // gem1 클릭 시 카드 보이기
+    if (gem1 && gem1Card) {
+      console.log('✅ gem1 이벤트 등록됨');
+      gem1.addEventListener('click', () => {
+        console.log('🧡 gem1 클릭됨');
+        gem1Card.style.display = 'block';
+      });
+
+      gem1Card.addEventListener('click', () => {
+        gem1Card.style.display = 'none';
+      });
+    }
+
+    const gem2 = document.querySelector('.gem2');
+const gem2Card = document.getElementById('gem2Card');
+
+if (gem2 && gem2Card) {
+  gem2.addEventListener('click', () => {
+    console.log('💎 gem2 클릭됨');
+    gem2Card.style.display = 'block';
+  });
+
+  gem2Card.addEventListener('click', () => {
+    gem2Card.style.display = 'none';
+  });
+}
+
+const gem3 = document.querySelector('.gem3');
+const gem3Card = document.getElementById('gem3Card');
+
+if (gem3 && gem3Card) {
+  gem3.addEventListener('click', () => {
+    console.log('💎 gem3 클릭됨');
+    gem3Card.style.display = 'block';
+  });
+
+  gem3Card.addEventListener('click', () => {
+    gem3Card.style.display = 'none';
+  });
+}
+
+const gem4 = document.querySelector('.gem4');
+const gem4Card = document.getElementById('gem4Card');
+
+if (gem4 && gem4Card) {
+  gem4.addEventListener('click', () => {
+    console.log('💠 gem4 클릭됨');
+    gem4Card.style.display = 'block';
+  });
+
+  gem4Card.addEventListener('click', () => {
+    gem4Card.style.display = 'none';
+  });
+}
+
+
+
+    // 시작 버튼 클릭 시 보석 보이기
+    startBtn.addEventListener('click', () => {
+      console.log('🟡 시작 버튼 클릭됨');
+      document.getElementById('pyramid-content').classList.add('active');
+      document.querySelectorAll('.gem').forEach(gem => {
+        gem.style.display = 'block';
+        console.log('💎 보석 보이게 설정됨');
+      });
+    });
+  });
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const warPreSvgs = document.querySelectorAll('.war-pre-svg');
+
+    warPreSvgs.forEach(svg => {
+      svg.addEventListener('click', () => {
+        svg.style.display = 'none';  // 클릭 시 해당 SVG만 사라짐
+      });
+    });
+  });
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const trigger = document.getElementById('kinghabit-svg-right');
+    const overlay = document.getElementById('overlay-image');
+
+    trigger.addEventListener('click', () => {
+      overlay.style.display = 'block';
+    });
+  });
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const tortureTab = document.querySelector('[data-menu="torture"]');
+    const gif1 = document.getElementById('torture-gif');
+    const gif2 = document.getElementById('torture-gif-2');
+    const gif3 = document.getElementById('torture-gif-3');
+
+    if (tortureTab && gif1 && gif2 && gif3) {
+      tortureTab.addEventListener('click', () => {
+        // 콘텐츠 표시
+        document.querySelectorAll('.menu-content').forEach(el => el.classList.remove('active'));
+        document.getElementById('torture-content').classList.add('active');
+
+        // GIF 1, 2 보이기
+        gif1.style.display = 'block';
+        gif2.style.display = 'block';
+        gif3.style.display = 'none'; // 탭을 누를 때마다 gif3은 숨김 초기화
+      });
+
+      // gif2 클릭 시 gif3 보이기
+      gif2.addEventListener('click', () => {
+        gif3.style.display = 'block';
+      });
+
+      // gif3 클릭 시 gif3 닫기
+      gif3.addEventListener('click', () => {
+        gif3.style.display = 'none';
+      });
+    }
+  });
+</script>
+
+
+
+
+
+
+</body>
+</html>
